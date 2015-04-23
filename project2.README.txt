@@ -1,3 +1,21 @@
-name, date, description
+Greg Basile April 22
 
-be sure to include complete details of how to interact with your application
+Still a work in progress, but it fulfills all the requirements for project 2.
+
+How to use:
+1) Select the color you want your object to be (currently only a pyramid)
+2) Create an object by pressing create pyramid
+	A pyramid will appear of the color of your choice
+3) controls:
+	Rotate object with W,A,S,D and Q,E
+	Scale object with left and right arrow keys
+	change depth of object using up and down arrows
+	Move object along x and y axis by holding down mouse and dragging object
+4) Work to be done:(in order of to do list)
+	Add more objects to be created
+	Allow user to modify object's after creation
+	Allow user to turn texture's on and off
+	Allow user to change light parameters
+	Make move all feature not interact easier (tends to make object difficult to control afterwards
+	Allow user to change texture
+

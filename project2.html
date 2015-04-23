@@ -1,28 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset = "UTF-8"> </meta>
+<title>Project 2</title>
+<h1>Project 2</h1>
+
 <script id="vertex-shader" type="x-shader/x-vertex">
+// Color, position, and model view matrix
 attribute vec4 vPosition;
-void main()
-{
-gl_Position = vPosition;
+attribute vec4 vColor;
+varying vec4 fColor;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uPerspectiveMatrix, uWorldMatrix;
+
+// Light Variables:
+uniform vec4 ambientProduct, diffuseProduct,specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+attribute vec3 vNormal;
+
+// Texture Variables:
+varying vec2 fTexCoord;
+attribute vec2 aTexCoord;
+
+void lightCalcs(){
+	vec3 pos = -(uModelViewMatrix * vPosition).xyz;
+    
+    //fixed light postion
+    
+    vec3 light = lightPosition.xyz;
+    vec3 L = normalize( light - pos );
+
+	
+    vec3 E = normalize( -pos );
+    vec3 H = normalize( L + E );
+    
+    vec4 NN = vec4(vNormal,0);
+
+    // Transform vertex normal into eye coordinates
+       
+    vec3 N = normalize( (uModelViewMatrix*NN).xyz);
+
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
+
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+    
+    if( dot(L, N) < 0.0 ) {
+		specular = vec4(0.0, 0.0, 0.0, 1.0);
+    } 
+	fColor = vColor + ambient + diffuse + specular;
+	fColor.a = 1.0;
+}
+
+void main(){
+	lightCalcs();
+	fTexCoord = aTexCoord; 
+	gl_Position = uPerspectiveMatrix*uWorldMatrix*uModelViewMatrix*vPosition;
+	
 }
 </script>
+
 <script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
-void main()
-{
-gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
+varying vec4 fColor;
+
+uniform sampler2D texture;
+varying vec2 fTexCoord;
+
+void main() {
+	gl_FragColor = fColor*texture2D( texture, fTexCoord );
 }
 </script>
-<script type="text/javascript" src="../Common/webgl-utils.js"></script>
-<script type="text/javascript" src="../Common/initShaders.js"></script>
-<script type="text/javascript" src="../Common/MV.js"></script>
-<script type="text/javascript" src="project1.js"></script>
+
+<script type="text/javascript" src="Common/webgl-utils.js"></script>
+<script type="text/javascript" src="Common/initShaders.js"></script>
+<script type="text/javascript" src="Common/MV.js"></script>
+<script type="text/javascript" src="project2.js"></script>
 </head>
+<head>
 <body>
-<canvas id="gl-canvas" width="512" height="512">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
+	<canvas id="gl-canvas" width="512" height="512">
+		Oops ... your browser doesn't support the HTML5 canvas element
+	</canvas>
+	<p></p>
+	<p> <text>Number of Objects = <text id = "num">0</text></text></p>
+	<button id = "pyr">Create Pyramid</button>
+	<p>
+		Modifying Object:     
+		<input type = "text" id = "obj"></input>
+		<button id = "sub">Submit</button>
+	</p>
+	<button id = "all">Move All</button> <text>*Work In Progress*</text>
+	<p></p>
+	<!--<input type = "range">*Not Operational*</input>-->
+	<p>
+		Choose Color:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+		Current Color:&nbsp;
+		<text id = "cColor">Red</text> 
+	</p>
+	<!-- <DL><DT>Choose Color:&Tab; &Tab; &Tab; <DD>  hello </DL> -->
+	<p></p>
+	<button id = "red">Red</button>
+	<button id = "green">Green</button>
+	<button id = "blue">Blue</button>
+	<button id = "black">Black</button>
+	<button id = "white">White</button>	
+	<button id = "yellow">Yellow</button>
+	<button id = "magenta">Magenta</button>
+	<button id = "cyan">Cyan</button>
 </body>
+</head>
 </html>
